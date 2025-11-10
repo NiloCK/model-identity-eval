@@ -2,16 +2,16 @@
 
 # Model Identity Evaluation
 
-A framework for testing whether Large Language Models (LLMs) can accurately report their own identity, even under adversarial prompting conditions.
+An eval for testing whether Large Language Models (LLMs) can accurately report their own identity, even under adversarial prompting conditions.
 
 ## Motivation
 
-During a conversation with Claude Code, we discovered that models can be confused about their identity when:
-- Users claim to have switched models mid-conversation
+During a [conversation](conversation.txt) with Claude Code, we discovered that models can be confused about their identity when:
 - Context suggests a different model is responding
+- Users claim to have switched models mid-conversation
 - False corrections are provided about the model's identity
 
-This framework provides standardized tests to measure **model metacognition** - specifically, whether models maintain accurate self-identification under various conditions.
+This eval provides standardized tests to measure **model metacognition** - specifically, whether models maintain accurate self-identification under various conditions.
 
 ## Features
 
@@ -77,36 +77,7 @@ print(f"Passed: {result.passed_tests}/{result.total_tests}")
 
 To add support for a real API (e.g., Anthropic, OpenAI):
 
-1. Create a new provider in `src/providers/`:
-
-```python
-# src/providers/anthropic_provider.py
-from anthropic import Anthropic
-from .base import Provider, Message, ModelResponse, ProviderError
-
-class AnthropicProvider(Provider):
-    def __init__(self, model_id: str, api_key: str, **kwargs):
-        super().__init__(model_id, **kwargs)
-        self.client = Anthropic(api_key=api_key)
-
-    def generate(self, messages, **kwargs):
-        try:
-            response = self.client.messages.create(
-                model=self.model_id,
-                messages=[m.to_dict() for m in messages],
-                max_tokens=kwargs.get('max_tokens', 1024)
-            )
-            return ModelResponse(
-                content=response.content[0].text,
-                metadata={"usage": response.usage}
-            )
-        except Exception as e:
-            raise ProviderError(f"Anthropic API error: {e}")
-
-    @property
-    def name(self):
-        return "Anthropic"
-```
+1. Create a new provider in `src/providers/`, such as `src/providers/anthropic_provider.py`. The implementation will depend on the API, but should follow the `Provider` interface defined in `src/providers/base.py`.
 
 2. Use it in your eval:
 
@@ -211,6 +182,7 @@ Add to the `model_configs` section:
 model-identity-eval/
 ├── README.md                   # This file
 ├── requirements.txt            # Python dependencies
+├── conversation.txt            # motivating claude-code transcript
 ├── evals/                      # Evaluation configs
 │   └── identity_v1.json       # Standard identity eval
 ├── src/                        # Source code
@@ -252,18 +224,6 @@ Results are saved as JSON:
 }
 ```
 
-## Contributing
-
-Ideas for extensions:
-
-- [ ] Support for more API providers (OpenAI, Anthropic, Vertex, Bedrock, etc.)
-- [ ] Additional scoring methods (LLM-as-judge, semantic similarity)
-- [ ] More adversarial test cases
-- [ ] Multi-turn consistency tests
-- [ ] Automated testing with pytest
-- [ ] CLI tool for easy eval running
-- [ ] Benchmark dataset of real model responses
-
 ## Design Principles
 
 1. **Provider-agnostic**: Works with any LLM API via the provider interface
@@ -277,4 +237,4 @@ This project emerged from a conversation about model metacognition with Claude C
 
 ## License
 
-MIT (or your preferred license)
+MIT
