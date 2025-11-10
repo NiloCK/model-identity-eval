@@ -1,3 +1,5 @@
+![I know my own name meme](my-own-name.jpg)
+
 # Model Identity Evaluation
 
 A framework for testing whether Large Language Models (LLMs) can accurately report their own identity, even under adversarial prompting conditions.
