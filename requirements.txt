@@ -1,0 +1,10 @@
+# Core dependencies (minimal for mock provider)
+# No external dependencies required for basic usage
+
+# Optional: For real API providers (uncomment as needed)
+# anthropic>=0.40.0  # For Claude models
+# openai>=1.0.0      # For GPT models
+
+# Development dependencies
+pytest>=7.0.0
+pytest-cov>=4.0.0
